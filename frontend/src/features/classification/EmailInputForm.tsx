@@ -42,62 +42,49 @@ export const EmailInputForm = ({
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="w-full">
-      <label
-        htmlFor="email-input"
-        className="block text-lg font-medium text-gray-700"
-      >
-        Cole o texto do email abaixo:
-      </label>
-      <textarea
-        id="email-input"
-        ref={textAreaRef}
-        rows={8}
-        className="mt-2 block w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition disabled:bg-gray-50 resize-none"
-        placeholder="Insira o conteúdo do email aqui..."
-        onChange={handleTextChange}
-        disabled={isLoading}
-      />
-
-      <div className="my-6 flex items-center text-center">
-        <div className="flex-grow border-t border-gray-300"></div>
-        <span className="flex-shrink mx-4 text-gray-500 font-semibold">OU</span>
-        <div className="flex-grow border-t border-gray-300"></div>
-      </div>
-
-      <div>
-        <label className="block text-lg font-medium text-gray-700">
-          Envie um arquivo (.txt ou .pdf):
-        </label>
-        <div className="mt-2 flex items-center gap-4">
-          <label
-            htmlFor="file-upload"
-            className="cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500 px-4 py-2 border border-gray-300 shadow-sm text-sm hover:bg-gray-50 transition-colors"
+    <form onSubmit={handleFormSubmit} className="w-full max-w-2xl mx-auto">
+      <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-1 shadow-2xl">
+        <textarea
+          id="email-input"
+          ref={textAreaRef}
+          rows={8}
+          className="w-full p-4 bg-transparent text-gray-200 placeholder-gray-500 focus:outline-none resize-none cursor-auto"
+          placeholder="Insira o conteúdo do email aqui..."
+          onChange={handleTextChange}
+          disabled={isLoading}
+        />
+        <div className="flex justify-between items-center p-2 border-t border-gray-700">
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="file-upload"
+              className="flex items-center gap-2 cursor-pointer rounded-md text-sm font-medium text-gray-400 hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-xl">
+                attach_file
+              </span>
+              <span>Anexar arquivo</span>
+              <input
+                id="file-upload"
+                type="file"
+                ref={fileInputRef}
+                accept=".txt,.pdf"
+                onChange={handleFileSelect}
+                disabled={isLoading}
+                className="sr-only"
+              />
+            </label>
+            {currentFile && (
+              <p className="text-sm text-gray-400">{currentFile.name}</p>
+            )}
+          </div>
+          <Button
+            type="submit"
+            isLoading={isLoading}
+            loadingText="Analisando..."
           >
-            <span>Selecionar arquivo</span>
-            <input
-              id="file-upload"
-              name="file-upload"
-              type="file"
-              ref={fileInputRef}
-              accept=".txt,.pdf"
-              onChange={handleFileSelect}
-              disabled={isLoading}
-              className="sr-only"
-            />
-          </label>
-          {currentFile && (
-            <p className="text-sm text-gray-600">
-              <span className="font-medium">{currentFile.name}</span>
-            </p>
-          )}
+            Analisar
+          </Button>
         </div>
-      </div>
-
-      <div className="mt-8 text-center">
-        <Button type="submit" isLoading={isLoading}>
-          Analisar
-        </Button>
       </div>
     </form>
   );

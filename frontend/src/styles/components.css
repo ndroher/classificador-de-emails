@@ -1,0 +1,15 @@
+/* Spinner de carregamento para botões */
+.loader {
+  width: 1.25em;
+  height: 1.25em;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ffffff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

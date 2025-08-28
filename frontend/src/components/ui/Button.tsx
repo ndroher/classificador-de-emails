@@ -2,26 +2,26 @@ import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
+  loadingText?: string;
   children: React.ReactNode;
 }
 
 export const Button = ({
   children,
   isLoading = false,
+  loadingText = "Carregando...",
   ...props
 }: ButtonProps) => {
   return (
     <button
       {...props}
       disabled={isLoading || props.disabled}
-      className="inline-flex items-center justify-center min-w-[150px] px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed transition-colors"
+      className="inline-flex items-center justify-center rounded-md px-5 py-2 text-sm font-semibold text-white shadow-sm bg-indigo-600 hover:bg-indigo-700 hover:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-400/50 disabled:cursor-not-allowed transition-colors"
     >
       {isLoading ? (
         <>
-          <span className="material-symbols-outlined animate-spin -ml-1 mr-3">
-            data_usage
-          </span>
-          <span>Analisando...</span>
+          <span className="loader mr-3" />
+          <span>{loadingText}</span>
         </>
       ) : (
         children
