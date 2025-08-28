@@ -3,20 +3,16 @@ import type { ClassificationData } from "../features/classification/types";
 const API_ENDPOINT = "/api/classificar";
 
 /**
- * Envia o texto de um email para o backend para classificação.
- * @param emailText - O texto do email a ser analisado.
+ * Envia dados do email (texto ou arquivo) para o backend usando FormData.
+ * @param formData - O objeto FormData contendo 'email_text' ou 'file'.
  * @returns Uma Promise que resolve com os dados da classificação.
- * @throws Lança um erro se a resposta da API não for bem-sucedida.
  */
 export const classifyEmail = async (
-  emailText: string
+  formData: FormData
 ): Promise<ClassificationData> => {
   const response = await fetch(API_ENDPOINT, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email_text: emailText }),
+    body: formData,
   });
 
   if (!response.ok) {

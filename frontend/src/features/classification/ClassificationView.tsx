@@ -6,13 +6,14 @@ import { classifyEmail } from "../../services/classificationAPI";
 
 export const ClassificationView = () => {
   const [emailText, setEmailText] = React.useState<string>("");
+  const [file, setFile] = React.useState<File | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [result, setResult] = React.useState<ClassificationData | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
-  const handleAnalyseEmail = async () => {
-    if (!emailText.trim()) {
-      setError("Por favor, insira o texto do email antes de analisar.");
+  const handleAnalyse = async () => {
+    if (!emailText.trim() && !file) {
+      setError("Por favor, insira um texto ou selecione um arquivo.");
       return;
     }
 
@@ -20,14 +21,21 @@ export const ClassificationView = () => {
     setError(null);
     setResult(null);
 
+    const formData = new FormData();
+    if (file) {
+      formData.append("file", file);
+    } else {
+      formData.append("email_text", emailText);
+    }
+
     try {
-      const apiResult = await classifyEmail(emailText);
+      const apiResult = await classifyEmail(formData);
       setResult(apiResult);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Ocorreu um erro desconhecido. Tente novamente.");
+        setError("Ocorreu um erro desconhecido.");
       }
     } finally {
       setIsLoading(false);
@@ -38,8 +46,10 @@ export const ClassificationView = () => {
     <div>
       <EmailInputForm
         onTextChange={setEmailText}
-        onSubmit={handleAnalyseEmail}
+        onFileChange={setFile}
+        onSubmit={handleAnalyse}
         isLoading={isLoading}
+        currentFile={file}
       />
       {error && (
         <p className="mt-4 text-center text-red-600 font-medium">{error}</p>
