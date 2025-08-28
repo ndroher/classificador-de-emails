@@ -1,37 +1,23 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { ClassificationView } from "./features/classification/ClassificationView";
+import { PageWrapper } from "./components/layout/PageWrapper";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="text-4xl font-bold text-white underline decoration-sky-500">
-        Vite + React + Tailwind
-      </h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <PageWrapper>
+      <header className="text-center">
+        <h1 className="text-4xl font-extrabold text-gray-900">
+          Classificador de Emails com IA
+        </h1>
+        <p className="mt-2 text-lg text-gray-600">
+          Otimize seu tempo. Deixe a IA classificar seus emails e sugerir
+          respostas.
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      </header>
+      <main className="bg-white p-8 rounded-xl shadow-lg mt-8">
+        <ClassificationView />
+      </main>
+    </PageWrapper>
   );
-}
+};
 
 export default App;
