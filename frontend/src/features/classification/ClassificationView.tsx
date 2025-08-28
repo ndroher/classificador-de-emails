@@ -1,4 +1,5 @@
 import React from "react";
+import { AnimatePresence } from "framer-motion";
 import { EmailInputForm } from "./EmailInputForm";
 import { ClassificationResult } from "./ClassificationResult";
 import type { ClassificationData } from "./types";
@@ -32,18 +33,16 @@ export const ClassificationView = () => {
       const apiResult = await classifyEmail(formData);
       setResult(apiResult);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Ocorreu um erro desconhecido.");
-      }
+      const errorMessage =
+        err instanceof Error ? err.message : "Ocorreu um erro desconhecido.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div>
+    <>
       <EmailInputForm
         onTextChange={setEmailText}
         onFileChange={setFile}
@@ -51,10 +50,15 @@ export const ClassificationView = () => {
         isLoading={isLoading}
         currentFile={file}
       />
-      {error && (
-        <p className="mt-4 text-center text-red-600 font-medium">{error}</p>
-      )}
-      {result && <ClassificationResult data={result} />}
-    </div>
+
+      <div className="mt-10">
+        <AnimatePresence>
+          {error && (
+            <p className="mt-4 text-center text-red-500 font-medium">{error}</p>
+          )}
+          {result && <ClassificationResult data={result} key="result-card" />}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };

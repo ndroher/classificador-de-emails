@@ -1,4 +1,5 @@
 import React from "react";
+import { AnimatedBackground } from "./AnimatedBackground";
 
 interface PageWrapperProps {
   children: React.ReactNode;
@@ -6,8 +7,11 @@ interface PageWrapperProps {
 
 export const PageWrapper = ({ children }: PageWrapperProps) => {
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl w-full space-y-4">{children}</div>
+    <div className="relative bg-gray-900 text-white min-h-screen overflow-hidden">
+      <AnimatedBackground />
+      <div className="relative z-10 isolate px-6 pt-14 lg:px-8">
+        <div className="mx-auto max-w-4xl py-12 sm:py-24">{children}</div>
+      </div>
     </div>
   );
 };

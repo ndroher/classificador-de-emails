@@ -4,18 +4,16 @@ import { PageWrapper } from "./components/layout/PageWrapper";
 const App = () => {
   return (
     <PageWrapper>
-      <header className="text-center">
-        <h1 className="text-4xl font-extrabold text-gray-900">
-          Classificador de Emails com IA
+      <header className="text-center mb-12">
+        <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-600 pb-2">
+          Classificador de Emails
         </h1>
-        <p className="mt-2 text-lg text-gray-600">
-          Otimize seu tempo. Deixe a IA classificar seus emails e sugerir
-          respostas.
+        <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+          Otimize seu tempo. Deixe nossa IA classificar e sugerir a resposta
+          ideal para você.
         </p>
-      </header>
-      <main className="bg-white p-8 rounded-xl shadow-lg mt-8">
-        <ClassificationView />
-      </main>
+      </header>{" "}
+      <ClassificationView />
     </PageWrapper>
   );
 };
