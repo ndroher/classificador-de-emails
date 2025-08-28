@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, request
 from werkzeug.exceptions import BadRequest
 from werkzeug.utils import secure_filename
-from ai_service import extract_text_from_file, process_email_with_gemini
+from .ai_service import extract_text_from_file, process_email_with_gemini
 
 app = Flask(__name__)
 
