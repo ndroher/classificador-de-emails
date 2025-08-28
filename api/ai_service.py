@@ -50,7 +50,14 @@ def process_email_with_gemini(email_text: str) -> dict:
         return {"error": "A API do Gemini não foi inicializada corretamente."}
 
     prompt = f"""
-Sua tarefa é analisar o email abaixo, classificá-lo estritamente como 'Produtivo' ou 'Improdutivo', e gerar uma sugestão de resposta profissional e concisa em português.
+Sua tarefa é analisar o email abaixo e gerar uma sugestão de resposta que seja um email profissional completo.
+
+REGRAS DE FORMATAÇÃO DA RESPOSTA:
+1.  **Formato de Email:** A resposta deve ter cara de um email real, com saudação, corpo e encerramento.
+2.  **Parágrafos:** Utilize quebras de parágrafo (duas quebras de linha) para separar as ideias e garantir a legibilidade.
+3.  **Sem Markdown:** Não utilize formatação markdown como asteriscos (*) ou hashtags (#).
+
+Depois de gerar a resposta, classifique o email original como 'Produtivo' ou 'Improdutivo'.
 Retorne sua análise exclusivamente no formato de um objeto JSON válido, com as chaves "classification" e "suggested_response".
 
 ---
@@ -60,9 +67,13 @@ EXEMPLOS PARA SEU APRENDIZADO:
 - Email de entrada: "Prezados, o sistema está fora do ar e apresentando erro 503. Poderiam verificar com urgência?"
 - JSON de saída esperado: {{"classification": "Produtivo", "suggested_response": "Olá. Recebemos seu alerta sobre a instabilidade no sistema. Nossa equipe técnica já está investigando e retornaremos em breve com uma atualização."}}
 
-2. Exemplo de email Improdutivo:
+2. Exemplo de email Improdutivo com resposta:
 - Email de entrada: "Obrigado pela ajuda, equipe! Tudo resolvido."
 - JSON de saída esperado: {{"classification": "Improdutivo", "suggested_response": "De nada! Ficamos felizes em ajudar."}}
+
+3. Exemplo de email Improdutivo sem resposta (spam/marketing):
+- Email de entrada: "Promoção imperdível! 50% de desconto em todos os nossos produtos. Clique agora!"
+- JSON de saída esperado: {{"classification": "Improdutivo", "suggested_response": ""}}
 ---
 
 Agora, analise o seguinte email real e forneça o resultado JSON.
