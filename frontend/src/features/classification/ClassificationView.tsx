@@ -2,7 +2,7 @@ import React from "react";
 import { EmailInputForm } from "./EmailInputForm";
 import { ClassificationResult } from "./ClassificationResult";
 import type { ClassificationData } from "./types";
-// import { classifyEmail } from '../../services/classificationAPI';
+import { classifyEmail } from "../../services/classificationAPI";
 
 export const ClassificationView = () => {
   const [emailText, setEmailText] = React.useState<string>("");
@@ -21,17 +21,14 @@ export const ClassificationView = () => {
     setResult(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // const apiResult = await classifyEmail(emailText);
-      // setResult(apiResult);
-
-      setResult({
-        classification: "Produtivo",
-        suggested_response:
-          "Olá! Recebemos sua solicitação e nossa equipe já está trabalhando nela. Retornaremos em breve.",
-      });
+      const apiResult = await classifyEmail(emailText);
+      setResult(apiResult);
     } catch (err) {
-      setError("Ocorreu um erro ao analisar o email. Tente novamente.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Ocorreu um erro desconhecido. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
