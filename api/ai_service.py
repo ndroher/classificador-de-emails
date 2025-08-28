@@ -3,29 +3,33 @@ import json
 import logging
 from dotenv import load_dotenv
 import google.generativeai as genai
+import PyPDF2
 
 MODEL_NAME = "gemini-1.5-flash-latest"
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 load_dotenv()
 
+def extract_text_from_file(filepath: str) -> str:
+    """Extrai texto de arquivos .txt ou .pdf."""
+    text = ""
+    if filepath.lower().endswith('.pdf'):
+        with open(filepath, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            for page in reader.pages:
+                text += page.extract_text() or ""
+    elif filepath.lower().endswith('.txt'):
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            text = f.read()
+    return text
+
 def initialize_model():
-    """
-    Configura e retorna o modelo generativo do Gemini.
-    Retorna None se a configuração falhar.
-    """
+    """Configura e retorna o modelo generativo do Gemini."""
     try:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             raise ValueError("Chave da API do Gemini (GEMINI_API_KEY) não encontrada no arquivo .env")
-        
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(MODEL_NAME)
-        
         logging.info(f"[+] API do Gemini configurada com sucesso usando o modelo '{MODEL_NAME}'.")
         return model
     except Exception as e:
@@ -34,18 +38,8 @@ def initialize_model():
 
 model = initialize_model()
 
-
 def process_email_with_gemini(email_text: str) -> dict:
-    """
-    Usa o modelo Gemini para classificar um email e sugerir uma resposta.
-
-    Args:
-        email_text: O texto do email a ser processado.
-
-    Returns:
-        Um dicionário contendo "classification" e "suggested_response",
-        ou um dicionário de erro em caso de falha.
-    """
+    """Usa o modelo Gemini para classificar um email e sugerir uma resposta."""
     if not model:
         return {"error": "A API do Gemini não foi inicializada corretamente."}
 
@@ -62,10 +56,9 @@ Retorne sua análise exclusivamente no formato de um objeto JSON válido, com as
 
 ---
 EXEMPLOS PARA SEU APRENDIZADO:
-
 1. Exemplo de email Produtivo:
 - Email de entrada: "Prezados, o sistema está fora do ar e apresentando erro 503. Poderiam verificar com urgência?"
-- JSON de saída esperado: {{"classification": "Produtivo", "suggested_response": "Olá. Recebemos seu alerta sobre a instabilidade no sistema. Nossa equipe técnica já está investigando e retornaremos em breve com uma atualização."}}
+- JSON de saída esperado: {{"classification": "Produtivo", "suggested_response": "Olá.\\n\\nRecebemos seu alerta sobre a instabilidade no sistema. Nossa equipe técnica já está investigando e retornaremos em breve com uma atualização."}}
 
 2. Exemplo de email Improdutivo com resposta:
 - Email de entrada: "Obrigado pela ajuda, equipe! Tudo resolvido."
@@ -83,16 +76,11 @@ Email para analisar:
 {email_text}
 \"\"\"
 """
-
     try:
         response = model.generate_content(prompt)
         cleaned_response = response.text.strip().replace("```json", "").replace("```", "").strip()
         result = json.loads(cleaned_response)
         return result
-    except json.JSONDecodeError as e:
-        logging.error(f"Erro ao decodificar o JSON da resposta da API: {e}")
-        logging.error(f"Resposta bruta recebida que causou o erro: {cleaned_response}")
-        return {"error": "A IA retornou uma resposta em formato inválido."}
     except Exception as e:
-        logging.error(f"Erro na chamada da API do Gemini ou outra exceção: {e}")
+        logging.error(f"Erro na chamada da API do Gemini: {e}")
         return {"error": "Falha ao processar o email com a IA."}

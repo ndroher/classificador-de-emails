@@ -1,30 +1,52 @@
+import os
 from flask import Flask, jsonify, request
 from werkzeug.exceptions import BadRequest
-
-from ai_service import process_email_with_gemini
+from werkzeug.utils import secure_filename
+from ai_service import extract_text_from_file, process_email_with_gemini
 
 app = Flask(__name__)
 
+UPLOAD_FOLDER = '/tmp'
+ALLOWED_EXTENSIONS = {'txt', 'pdf'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def is_allowed_file(filename):
+    """Verifica se a extensão do arquivo é permitida."""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    """Verifica a saúde da API, retornando um status de sucesso."""
+    """Endpoint para verificar se a API está no ar."""
     return jsonify({"status": "ok", "message": "Backend is running!"})
 
-
 @app.route('/api/classificar', methods=['POST'])
-def classificar_email():
+def classify_email():
     """
-    Recebe o texto de um email, o classifica e retorna uma resposta sugerida.
-    Espera um corpo de requisição JSON com a chave "email_text".
+    Recebe um email via texto ou arquivo, o classifica e retorna uma resposta.
     """
     try:
-        data = request.get_json()
-        if not data or 'email_text' not in data:
-            raise BadRequest("O campo 'email_text' é obrigatório no corpo do JSON.")
+        email_text = ""
+        if 'file' in request.files and request.files['file'].filename != '':
+            file = request.files['file']
+            if not is_allowed_file(file.filename):
+                raise BadRequest("Tipo de arquivo não permitido. Use .txt ou .pdf.")
+            
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            try:
+                email_text = extract_text_from_file(filepath)
+            finally:
+                os.remove(filepath)
 
-        email_text = data.get('email_text', '').strip()
-        if not email_text:
-            raise BadRequest("O campo 'email_text' não pode estar vazio.")
+        elif 'email_text' in request.form:
+            email_text = request.form.get('email_text', '').strip()
+            if not email_text:
+                raise BadRequest("O campo 'email_text' não pode estar vazio.")
+        else:
+            raise BadRequest("Nenhum arquivo ou texto foi enviado.")
 
         result = process_email_with_gemini(email_text)
 
